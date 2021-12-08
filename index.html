@@ -182,11 +182,15 @@
   <div>
     <h2 id="confirme" >Confirme para salvar seu currículo</h2>
     <button  class="button" onclick="exibirMensagem()" >Confirmar</button>
-   
+   <script type="text/javascript">
+      function exibirMensagem()
+      {
+          var data = new Date();
+          alert("Seu currículo foi salvo em:" +  data.toString());
+      }
+  </script>
     
-   
-
-
+  
     <script>
    Parse.serverURL = 'https://parseapi.back4app.com'; // This is your Server URL
 // Remember to inform BOTH the Back4App Application ID AND the JavaScript KEY
