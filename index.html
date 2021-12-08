@@ -1,6 +1,12 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+  <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/parse/3.3.1/parse.min.js"
+      integrity="sha512-pD+Z+o1kNqJJWBHNIJdCVW6aLD0OLGiQq+lQwacqW9+xWT7f1nH11EFSgfITSZL+QQ4AhsBA0koTKWXyKrR7mw=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -57,6 +63,11 @@
     <div>
       <h2 class="Objetivo">Objetivo Principal</h2>
       <p class="p">Acabei de me formar na escola e espero obter uma bolsa acadêmica que me ajude a conseguir um bacharelado em jornalismo. Tenho interesse em escrever notícias.</p>
+    </div>
+    <div>
+    <h2 class="Objetivo">Hobbies</h2>
+    <p class= "p" id="exp" ></p>  
+    <pre class= "p" id="tarefas"></pre>
     </div>
     </div>
   </div>
@@ -171,14 +182,83 @@
   <div>
     <h2 id="confirme" >Confirme para salvar seu currículo</h2>
     <button  class="button" onclick="exibirMensagem()" >Confirmar</button>
-    <script type="text/javascript">
-      function exibirMensagem()
-      {
-          var data = new Date();
-          alert("Seu currículo foi salvo em:" +  data.toString());
-      }
-  </script>
+   
+    
+   
 
+
+    <script>
+   Parse.serverURL = 'https://parseapi.back4app.com'; // This is your Server URL
+// Remember to inform BOTH the Back4App Application ID AND the JavaScript KEY
+Parse.initialize(
+  '0mUFBfBC5IkPbFsUxSvQnis7FrtnCwVuh5F4t2KR', // This is your Application ID
+  'bL5aAfCVq94GknTEU14pdtijVf2eu4KmqiC0LUHi' // This is your Javascript key
+);
+
+    let demo = document.getElementById("demo");
+      let inputTarefa = document.getElementById("tarefa");
+      let exp = document.getElementById("exp");
+      let listaTarefas = document.getElementById("tarefas");
+      let cbTarefasAFazer = document.getElementById("cbTarefasAFazer");
+
+      let tarefas;
+      let tarefasAFazer = false;
+
+      const adicionarTarefa = async () => {
+        let tarefa = inputTarefa.value.trim();
+        if (!tarefa) {
+          alert("Digite uma tarefa!");
+          return;
+        }
+        const novaTarefa = new Parse.Object("Tarefa");
+        novaTarefa.set("descricao", tarefa);
+        try {
+          const result = await novaTarefa.save();
+          inputTarefa.value = "";
+          inputTarefa.focus();
+          console.log("Tarefa criada", result);
+          consultarTarefas();
+        } catch (error) {
+          console.error("Error ao criar Tarefa: ", error);
+        }
+      };
+
+      const consultarTarefas = async () => {
+        const Tarefa = Parse.Object.extend("Tarefa");
+        const query = new Parse.Query(Tarefa);
+        if (tarefasAFazer) {
+          query.equalTo("feita", false);
+        }
+        listaTarefas.innerHTML = "";
+        try {
+          tarefas = await query.find();
+          console.log("tarefas", tarefas);
+          for (let i = 0; i < tarefas.length; ++i) {
+            const descricao = tarefas[i].get("descricao");
+            const feita = tarefas[i].get("feita");
+            console.log("feita", feita);
+            listaTarefas.innerHTML += `<li>${descricao}</li>`;
+          }
+        } catch (error) {
+          console.error("Error while fetching Tarefa", error);
+        }
+      };
+
+      const handleRemoverTarefa = async (indice) => {
+        try {
+          await tarefas[indice].destroy();
+          consultarTarefas();
+        } catch (error) {
+          alert("Erro ao remover a tarefa: " + error.message);
+        }
+      };
+
+      const handleChangeTarefasAFazer = () => {
+        tarefasAFazer = cbTarefasAFazer.checked;
+        consultarTarefas();
+      };
+      consultarTarefas();
+  </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js" integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB" crossorigin="anonymous"></script>
